@@ -1,65 +1,101 @@
-function createRect(mode, x, y, width, height)
-  rect = {}
-  rect.mode = mode
-  rect.x = x
-  rect.y = y
-  rect.width = width
-  rect.height = height
-  return rect
+function checkCollision(bars, ball)
+  if bars.left.x + bars.left.width >= ball.x - ball.radius
+  and bars.left.y <= ball.y
+  and bars.left.y + bars.left.height >= ball.y
+  then
+    ball.vx = ball.vx * (-1)
+    ball.vy = math.random()
+    ball.speed = ball.speed + 50
+  end
+  if bars.right.x <= ball.x + ball.radius
+  and bars.right.y <= ball.y
+  and bars.right.y + bars.right.height >= ball.y
+  then
+    ball.vx = ball.vx * (-1)
+    ball.vy = math.random()
+    ball.speed = ball.speed + 50
+  end
+  if bars.top.y + bars.top.height >= ball.y - ball.radius
+  and bars.top.x <= ball.x
+  and bars.top.x + bars.top.width >= ball.x
+  then
+    ball.vy = ball.vy * (-1)
+    ball.vx = math.random()
+    ball.speed = ball.speed + 50
+  end
+  if bars.bottom.y <= ball.y + ball.radius
+  and bars.bottom.x <= ball.x
+  and bars.bottom.x + bars.bottom.width >= ball.x
+  then
+    ball.vy = ball.vy * (-1)
+    ball.vx = math.random()
+    ball.speed = ball.speed + 50
+  end
 end
-
-function drawRect(rectangle)
-  love.graphics.rectangle(rectangle.mode, rectangle.x, rectangle.y, rectangle.width, rectangle.height)
+function initBar()
+  bars = {}
+  bars.top = Bar("fill", 300, 5, 200, 15)
+  bars.bottom = Bar("line", 300, 600 - 15 - 5, 200, 15)
+  bars.left = Bar("fill", 5, 250, 15, 200)
+  bars.right = Bar("line", 800 - 15 - 5, 250, 15, 200)
+  bars.speed = 450
+  return bars
 end
-
 function love.load()
+  math.randomseed(os.time())
   Object = require "classic"
-  require "bar"
-  require "ball"
-  barTop = Bar("fill", 300, 5, 200, 15)
-  barBottom = Bar("line", 300, 600 - 15 - 5, 200, 15)
-  barLeft = Bar("fill", 5, 250, 15, 200)
-  barRight = Bar("line", 800 - 15 - 5, 250, 15, 200)
-  speed = 450
-  ball1 = Ball(395, 295, -1, 0)
+  Bar = require "bar"
+  Ball = require "ball"
+  bars = initBar()
+  balls = {Ball(395, 295, -1, 0, 200)}
 end
-
 function love.update(dt)
   if love.keyboard.isDown("up") then
-    barRight.up(barRight, dt)
+    bars.right:up(dt, bars.speed)
   elseif love.keyboard.isDown("down") then
-    barRight.down(barRight, dt)
+    bars.right:down(dt, bars.speed)
   end
   if love.keyboard.isDown("left") then
-    barBottom.left(barBottom, dt)
+    bars.bottom:left(dt, bars.speed)
   elseif love.keyboard.isDown("right") then
-    barBottom.right(barBottom, dt)
+    bars.bottom:right(dt, bars.speed)
   end
   if love.keyboard.isDown("z") then
-    barLeft.up(barLeft, dt)
+    bars.left:up(dt, bars.speed)
   elseif love.keyboard.isDown("s") then
-    barLeft.down(barLeft, dt)
+    bars.left:down(dt, bars.speed)
   end
   if love.keyboard.isDown("q") then
-    barTop.left(barTop, dt)
+    bars.top:left(dt, bars.speed)
   elseif love.keyboard.isDown("d") then
-    barTop.right(barTop, dt)
+    bars.top:right(dt, bars.speed)
   end
-  if ball1.x < 0 or ball1.x > 800 then
-    -- game over just reset ball position for now
-    ball1.x = ball1.xstart
+  for index, ball in ipairs(balls) do
+    -- If ball outstide the screen, restart is position
+    if ball.x < 0
+    or ball.x > 800
+    or ball.y < 0
+    or ball.y > 600
+    then ball:restart()
+    end
   end
-  if (ball1.x <= 5 + 15 and ball1.y >= barLeft.y and ball1.y <= barLeft.y + 200) or (ball1.x >= 800 - 15 - 5  and ball1.y >= barRight.y and ball1.y <= barRight.y + 200) then
-    ball1.vx = ball1.vx * (-1)
+  for index, ball in ipairs(balls) do
+    checkCollision(bars, ball)
+    ball:update(dt)
   end
-  ball1.x = ball1.x + speed / 2 * ball1.vx * dt
-  ball1.y = ball1.y + speed / 2 * ball1.vy * dt
+  if love.keyboard.isDown("space") then
+    for index, ball in ipairs(balls) do
+      ball:restart()
+    end
+  end
 end
 
 function love.draw()
-  barTop.draw(barTop)
-  barLeft.draw(barLeft)
-  barRight.draw(barRight)
-  barBottom.draw(barBottom)
-  love.graphics.circle("fill", ball1.x, ball1.y, 10)
+  bars.top:draw()
+  bars.bottom:draw()
+  bars.left:draw()
+  bars.right:draw()
+  for index, ball in ipairs(balls) do
+    ball:draw()
+  end
 end
