@@ -1,12 +1,16 @@
-function initBar()
-  bars = {}
-  bars.top = Bar(300, 15, 200, 15, "yellow")
-  bars.bottom = Bar(300, 600 - 15, 200, 15, "red")
-  bars.left = Bar(15, 250, 15, 200, "green")
-  bars.right = Bar(800 - 15, 250, 15, 200, "blue")
-  bars.speed = 450
+if arg[2] == "debug" then
+  require("lldebugger").start()
+end
+
+local function initBar()
+  local bars = {}
+  bars.top = Bar(400, 15, 2, 1, "yellow")
+  bars.bottom = Bar(400, 600 - 15, 2, 1, "red")
+  bars.left = Bar(15, 300, 1, 2, "green")
+  bars.right = Bar(800 - 15, 300, 1, 2, "blue")
   return bars
 end
+
 function love.load()
   math.randomseed(os.time())
   Object = require "classic"
@@ -14,24 +18,40 @@ function love.load()
   Ball = require "ball"
   require "physics"
   require "input"
-  bars = initBar()
-  balls = {Ball(395, 295, 200,"assets/bar_round_small_square.png")}
-  --song = love.audio.newSource("assets/tron-arp-synth-loop-155bpm-cb-minor-191911.mp3", "stream")
-  --song:setLooping(true)
-  --song:play()
+  Bars = initBar()
+  Assets = {love.graphics.newImage("assets/bar_round_small_square.png")}
+  Balls = {Ball(200, Assets[1])}
+  Speed = 400
+  Score = 0
+  local song = love.audio.newSource("assets/tron-arp-synth-loop-155bpm-cb-minor-191911.mp3", "stream")
+  song:setLooping(true)
+  song:play()
 end
+
 function love.update(dt)
-  keyinput(bars, balls, dt)
-  isballin(balls)
-  collision(bars, balls)
-  move(balls, dt)
+  Keyinput(Bars, Balls, dt, Speed)
+  Isballin(Balls)
+  Collision(Bars, Balls)
+  Move(Balls, dt)
 end
+
 function love.draw()
-  bars.top:draw(0)
-  bars.bottom:draw(0)
-  bars.left:draw(math.pi / 2)
-  bars.right:draw(math.pi / 2)
-  for index, ball in ipairs(balls) do
+  Bars.top:draw()
+  Bars.bottom:draw()
+  Bars.left:draw()
+  Bars.right:draw()
+  for index, ball in ipairs(Balls) do
     ball:draw()
   end
+  love.graphics.print("Score:"..Score, 25, 25)
+end
+
+local love_errorhandler = love.errorhandler
+
+function love.errorhandler(msg)
+    if lldebugger then
+        error(msg, 2)
+    else
+        return love_errorhandler(msg)
+    end
 end
