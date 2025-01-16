@@ -9,6 +9,11 @@ local function horizontalbounce(location, bar, ball)
   ball.vx = ((ball.x - bar.x) / (bar.width * 1.1 / 2)) * ball.speed
   ball.vy = math.sqrt(ball.speed ^ 2 - ball.vx ^ 2)
   ball.vy = ball.vy * dir
+  if location == "top" then
+    ball.bouncey = bar.y + bar.height / 2 + ball.radius + 2
+  else
+    ball.bouncey = bar.y - bar.height / 2 - ball.radius - 2
+  end
 end
 
 local function verticalbounce(location, bar, ball)
@@ -16,6 +21,11 @@ local function verticalbounce(location, bar, ball)
   ball.vy = (ball.y - bar.y) / (bar.height * 1.1 / 2) * ball.speed
   ball.vx = math.sqrt(ball.speed ^ 2 - ball.vy ^ 2)
   ball.vx = ball.vx * dir
+  if location == "left" then
+    ball.bouncex = bar.x + bar.width / 2 + ball.radius + 2
+  else
+    ball.bouncex = bar.x - bar.width / 2 - ball.radius - 2
+  end
 end
 
 local function bounce(location, bar, ball)
@@ -54,7 +64,8 @@ function Isballin(balls)
     or ball.y < 0
     or ball.y > 600
     then
-      table.remove(balls, index)
+      --table.remove(balls, index)
+      ball:restart()
     end
   end
 end
