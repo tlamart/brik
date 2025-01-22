@@ -10,7 +10,7 @@ local function horizontalbounce(location, bar, ball)
   ball.vy = math.sqrt(ball.speed ^ 2 - ball.vx ^ 2)
   ball.vy = ball.vy * dir
   if location == "top" then
-    ball.bouncey = bar.y + bar.height / 2 + ball.radius + 2
+    ball.bouncey = bar.y + bar.height / 2 + ball.radius + 1
   else
     ball.bouncey = bar.y - bar.height / 2 - ball.radius - 2
   end
@@ -37,15 +37,24 @@ local function bounce(location, bar, ball)
     verticalbounce(location, bar, ball)
   end
 end
+
 local function checkcollision(location, bar, ball)
   if math.abs(bar.x - ball.x) <= bar.width / 2 + ball.radius
   and math.abs(bar.y - ball.y) <= bar.height / 2 + ball.radius
   then
     bounce(location, bar, ball)
     Score = Score + 1
-    if #Balls < 3 and Score > 0 and Score % 10 == 0 then
-      table.insert(Balls, Ball(200, Assets[1]))
-    end
+    -- if Score % 10 == 0 then
+    --   Level = Level + 1
+    --   if Level > #LevelUp then
+    --     Level = 1
+    --   end
+    -- end
+    LevelUp[Level](location, bar, ball, 10)
+    -- ball.speed = ball.speed + 10
+    -- if #Balls < 3 and Score > 0 and Score % 10 == 0 then
+    --   table.insert(Balls, Ball(200, Assets[1]))
+    -- end
   end
 end
 
@@ -57,6 +66,24 @@ function Collision(bars, balls)
   end
 end
 
+local function infinite_bounce(ball)
+  if ball.x <= 0 or ball.x >= 800 then
+    ball.vx = -ball.vx
+    if ball.x <= 0 then
+      ball.x = 0
+    else
+      ball.x = 800
+    end
+  else
+    ball.vy = -ball.vy
+    if ball.y <= 0 then
+      ball.y = 0
+    else
+      ball.y = 600
+    end
+  end
+end
+
 function Isballin(balls)
   for index, ball in ipairs(balls) do
     if ball.x < 0
@@ -64,8 +91,17 @@ function Isballin(balls)
     or ball.y < 0
     or ball.y > 600
     then
-      --table.remove(balls, index)
-      ball:restart()
+      if Infinite then
+        infinite_bounce(ball)
+      else
+        table.remove(balls, index)
+        if #balls == 0 then
+          -- Song:setLooping(false)
+          Song[1]:stop()
+          Song[2]:play()
+        end
+      -- ball:restart()
+      end
     end
   end
 end

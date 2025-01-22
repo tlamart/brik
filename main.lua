@@ -2,12 +2,18 @@ if arg[2] == "debug" then
   require("lldebugger").start()
 end
 
+if arg[2] == "infinite" then
+  Infinite = true
+else
+  Infinite = false
+end
+
 local function initBar()
   local bars = {}
-  bars.top = Bar(400, 15, 2, 1, "yellow")
-  bars.bottom = Bar(400, 600 - 15, 2, 1, "red")
-  bars.left = Bar(15, 300, 1, 2, "green")
-  bars.right = Bar(800 - 15, 300, 1, 2, "blue")
+  bars.top = Bar(400, 15, 1, 0.5, Assets[2], Speed)
+  bars.bottom = Bar(400, 600 - 15, 1, 0.5, Assets[3], Speed)
+  bars.left = Bar(15, 300, 0.5, 1, Assets[4], Speed)
+  bars.right = Bar(800 - 15, 300, 0.5, 1, Assets[5], Speed)
   return bars
 end
 
@@ -16,23 +22,46 @@ function love.load()
   Object = require "classic"
   Bar = require "bar"
   Ball = require "ball"
+  LevelUp = require "level"
+  Level = 2
   require "physics"
   require "input"
-  Bars = initBar()
-  Assets = {love.graphics.newImage("assets/bar_round_small_square.png")}
-  Balls = {Ball(200, Assets[1])}
+  Assets = {
+    love.graphics.newImage("assets/bar_round_small_square.png"),
+    love.graphics.newImage("assets/yellow/bar_square_small.png"),
+    love.graphics.newImage("assets/red/bar_square_small.png"),
+    love.graphics.newImage("assets/blue/bar_square_small.png"),
+    love.graphics.newImage("assets/green/bar_square_small.png"),
+  }
   Speed = 400
+  Bars = initBar()
+  Balls = {Ball(200, Assets[1])}
   Score = 0
-  local song = love.audio.newSource("assets/tron-arp-synth-loop-155bpm-cb-minor-191911.mp3", "stream")
-  song:setLooping(true)
-  song:play()
+  Song = {
+    love.audio.newSource("assets/tron-arp-synth-loop-155bpm-cb-minor-191911.mp3", "stream"),
+    love.audio.newSource("assets/medium-explosion-40472.mp3", "static"),
+  }
+  Song[1]:setLooping(true)
+  Song[1]:play()
+end
+
+local function inGame()
+  return #Balls ~= 0
 end
 
 function love.update(dt)
-  Keyinput(Bars, Balls, dt, Speed)
-  Isballin(Balls)
-  Collision(Bars, Balls)
-  Move(Balls, dt)
+  if inGame() then
+    Keyinput(Bars, Balls, dt)
+    Isballin(Balls)
+    Collision(Bars, Balls)
+    Move(Balls, dt)
+  else
+    if love.keyboard.isDown("f1") then
+      love.event.quit('restart')
+    elseif love.keyboard.isDown("f2") then
+      love.event.quit()
+    end
+  end
 end
 
 function love.draw()
@@ -44,6 +73,9 @@ function love.draw()
     ball:draw()
   end
   love.graphics.print("Score:"..Score, 25, 25)
+  if inGame() == false then
+    love.graphics.print("\t\tPerdu !\n\nPress f1 to restart\nPress f2 to quit", 340, 280)
+  end
 end
 
 local love_errorhandler = love.errorhandler
