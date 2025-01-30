@@ -26,7 +26,7 @@ function title:new(x, y, text)
     self.y = y
     self.text = text
     self.width = 400
-    self.height = 40
+    self.height = 60
 end
 
 function title:draw()
@@ -49,12 +49,12 @@ function ui:new()
     y = 100
     self.ui = {
         title(x, y + 0 * 50, "Select a game mode:"),
-        button(x, y + 1 * 50, "Classic", setLevel, 1),
-        button(x, y + 2 * 50, "Ball acceleration", setLevel, 2),
-        button(x, y + 3 * 50, "Bar shrink", setLevel, 3),
-        button(x, y + 4 * 50, "Multiple balls", setLevel, 4),
-        button(x, y + 5 * 50, "Multiple balls (impossible mode)", setLevel, 5),
-        button(x, y + 6 * 50, "Infinite mode", setLevel, 6)
+        button(x, y + 3 * 50, "Classic", setLevel, 1),
+        button(x, y + 4 * 50, "Ball acceleration", setLevel, 2),
+        button(x, y + 5 * 50, "Bar shrink", setLevel, 3),
+        button(x, y + 6 * 50, "Multiple balls", setLevel, 4),
+        -- button(x, y + 5 * 50, "Multiple balls (impossible mode)", setLevel, 5),
+        -- button(x, y + 6 * 50, "Infinite mode", setLevel, 5)
     }
 end
 

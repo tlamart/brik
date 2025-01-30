@@ -18,21 +18,21 @@ local function bar_resize(location, bar, ball, delta)
     end
 end
 
-local function ball_double(location, bar, ball, delta)
-    local new = Ball(ball.speed, ball.asset)
-    new.x = ball.x
-    new.y = ball.y
-    new.bouncex = ball.bouncex
-    new.bouncey = ball.bouncey
-    if location == "top" or location == "bottom" then
-        new.vx = -ball.vx
-        new.vy = ball.vy
-    else
-        new.vx = ball.vx
-        new.vy = -ball.vy
-    end
-    table.insert(Balls, new)
-end
+-- local function ball_double(location, bar, ball, delta)
+--     local new = Ball(ball.speed, ball.asset)
+--     new.x = ball.x
+--     new.y = ball.y
+--     new.bouncex = ball.bouncex
+--     new.bouncey = ball.bouncey
+--     if location == "top" or location == "bottom" then
+--         new.vx = -ball.vx
+--         new.vy = ball.vy
+--     else
+--         new.vx = ball.vx
+--         new.vy = -ball.vy
+--     end
+--     table.insert(Balls, new)
+-- end
 
 local function ball_pop(location, bar, ball, delta)
     table.insert(Balls, Ball(ball.speed, ball.asset))
@@ -47,7 +47,7 @@ local levelUp = {
     ball_speed_variation,
     bar_resize,
     ball_pop,
-    ball_double,
+    -- ball_double,
     infinite_mode,
 }
 

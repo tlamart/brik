@@ -63,12 +63,25 @@ function love.update(dt)
   end
 end
 
+local function reset_bar_size(bar, scalex, scaley)
+  bar.scalex = scalex
+  bar.scaley = scaley
+  bar.width = bar.asset:getWidth() * scalex
+  bar.height = bar.asset:getHeight() * scaley
+  bar.originx = bar.width / (2 * bar.scalex)
+  bar.originy = bar.height / (2 * bar.scaley)
+end
+
 function love.mousepressed(x, y, button)
   if Level == nil then
     for i = 2, #Menu.ui do
       if math.abs(x - (Menu.ui[i].x + Menu.ui[i].width / 2)) <= Menu.ui[i].width / 2
       and math.abs(y - (Menu.ui[i].y + Menu.ui[i].height / 2)) <= Menu.ui[i].height
       then
+        reset_bar_size(Bars.top, 1, 0.5)
+        reset_bar_size(Bars.bottom, 1, 0.5)
+        reset_bar_size(Bars.left, 0.5, 1)
+        reset_bar_size(Bars.right, 0.5, 1)
         Menu.ui[i].callback(Menu.ui[i].arg)
       end
     end
