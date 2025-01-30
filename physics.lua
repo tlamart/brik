@@ -44,17 +44,7 @@ local function checkcollision(location, bar, ball)
   then
     bounce(location, bar, ball)
     Score = Score + 1
-    -- if Score % 10 == 0 then
-    --   Level = Level + 1
-    --   if Level > #LevelUp then
-    --     Level = 1
-    --   end
-    -- end
     LevelUp[Level](location, bar, ball, 10)
-    -- ball.speed = ball.speed + 10
-    -- if #Balls < 3 and Score > 0 and Score % 10 == 0 then
-    --   table.insert(Balls, Ball(200, Assets[1]))
-    -- end
   end
 end
 
@@ -96,11 +86,9 @@ function Isballin(balls)
       else
         table.remove(balls, index)
         if #balls == 0 then
-          -- Song:setLooping(false)
           Song[1]:stop()
           Song[2]:play()
         end
-      -- ball:restart()
       end
     end
   end

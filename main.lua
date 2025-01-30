@@ -2,12 +2,6 @@ if arg[2] == "debug" then
   require("lldebugger").start()
 end
 
-if arg[2] == "infinite" then
-  Infinite = true
-else
-  Infinite = false
-end
-
 local function initBar()
   local bars = {}
   bars.top = Bar(400, 15, 1, 0.5, Assets[2], Speed)
@@ -23,7 +17,7 @@ function love.load()
   Bar = require "bar"
   Ball = require "ball"
   LevelUp = require "level"
-  Level = 2
+  Level = nil
   require "physics"
   require "input"
   Assets = {
@@ -42,7 +36,8 @@ function love.load()
     love.audio.newSource("assets/medium-explosion-40472.mp3", "static"),
   }
   Song[1]:setLooping(true)
-  Song[1]:play()
+  Menu = require "menu"
+  Menu = Menu()
 end
 
 local function inGame()
@@ -50,31 +45,51 @@ local function inGame()
 end
 
 function love.update(dt)
-  if inGame() then
-    Keyinput(Bars, Balls, dt)
-    Isballin(Balls)
-    Collision(Bars, Balls)
-    Move(Balls, dt)
-  else
-    if love.keyboard.isDown("f1") then
-      love.event.quit('restart')
-    elseif love.keyboard.isDown("f2") then
-      love.event.quit()
+  if Level ~= nil then
+    if inGame() then
+      Keyinput(Bars, Balls, dt)
+      Isballin(Balls)
+      Collision(Bars, Balls)
+      Move(Balls, dt)
+    else
+      if love.keyboard.isDown("f1") then
+        table.insert(Balls, Ball(200, Assets[1]))
+        Score = 0
+        Level = nil
+      elseif love.keyboard.isDown("f2") then
+        love.event.quit('quit')
+      end
+    end
+  end
+end
+
+function love.mousepressed(x, y, button)
+  if Level == nil then
+    for i = 2, #Menu.ui do
+      if math.abs(x - (Menu.ui[i].x + Menu.ui[i].width / 2)) <= Menu.ui[i].width / 2
+      and math.abs(y - (Menu.ui[i].y + Menu.ui[i].height / 2)) <= Menu.ui[i].height
+      then
+        Menu.ui[i].callback(Menu.ui[i].arg)
+      end
     end
   end
 end
 
 function love.draw()
-  Bars.top:draw()
-  Bars.bottom:draw()
-  Bars.left:draw()
-  Bars.right:draw()
-  for index, ball in ipairs(Balls) do
-    ball:draw()
-  end
-  love.graphics.print("Score:"..Score, 25, 25)
-  if inGame() == false then
-    love.graphics.print("\t\tPerdu !\n\nPress f1 to restart\nPress f2 to quit", 340, 280)
+  if Level then
+    Bars.top:draw()
+    Bars.bottom:draw()
+    Bars.left:draw()
+    Bars.right:draw()
+    for index, ball in ipairs(Balls) do
+      ball:draw()
+    end
+    love.graphics.print("Score:"..Score, 25, 25)
+    if inGame() == false then
+      love.graphics.print("\t\tPerdu !\n\nPress f1 to restart\nPress f2 to quit", 340, 280)
+    end
+  else
+    Menu:draw()
   end
 end
 

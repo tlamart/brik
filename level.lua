@@ -38,6 +38,9 @@ local function ball_pop(location, bar, ball, delta)
     table.insert(Balls, Ball(ball.speed, ball.asset))
 end
 
+local function infinite_mode(location, bar, ball, delta)
+    Infinite = true
+end
 
 local levelUp = {
     bar_speed_variation,
@@ -45,6 +48,7 @@ local levelUp = {
     bar_resize,
     ball_pop,
     ball_double,
+    infinite_mode,
 }
 
 return levelUp

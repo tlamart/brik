@@ -1,7 +1,6 @@
 local Bar = Object:extend()
 
 function Bar:new(x, y, scalex, scaley, asset, speed)
-  -- self.asset = love.graphics.newImage("assets/" .. path .. "/bar_round_small.png")
   self.asset = asset
   self.x = x
   self.y = y
